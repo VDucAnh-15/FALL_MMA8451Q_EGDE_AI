@@ -102,8 +102,8 @@ static void processFIFOData()
         return;
     }
 
-    // Drain what is currently available in FIFO (max depth is 32).
-    uint8_t samples_to_read = (count > 32) ? 32 : count;
+    // Keep wake processing cost deterministic by consuming a fixed chunk.
+    uint8_t samples_to_read = WATERMARK_SAMPLES;
 
     for (uint8_t i = 0; i < samples_to_read; i++) {
         int16_t x_raw = 0;

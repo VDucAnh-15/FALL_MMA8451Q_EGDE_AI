@@ -115,10 +115,9 @@ void MMA8451::setupFIFO_Watermark(uint8_t data_rate, uint8_t range, uint8_t wate
 
     // Step 3: Configure FIFO
     // F_MODE[7:6] = 01 (Circular mode)
-    // WMRK[5:0] = watermark value (interrupt triggers when F_CNT > WMRK)
-    // Để có 25 samples, cần ghi WMRK = 24 (25 - 1)
-    // QUAN TRỌNG: Phải ghi chính xác (watermark - 1), KHÔNG shift thêm
-    uint8_t f_setup = (0x01 << 6) | (watermark & 0x3F);
+    // WMRK[5:0] uses (requested watermark - 1) because interrupt asserts at F_CNT > WMRK.
+    uint8_t wmrk_reg = (uint8_t)((watermark - 1) & 0x3F);
+    uint8_t f_setup = (0x01 << 6) | wmrk_reg;
     writeRegister(REG_F_SETUP, f_setup);
     delay(2);
 
